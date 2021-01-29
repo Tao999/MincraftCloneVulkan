@@ -73,7 +73,7 @@ void Renderer::initVulkan() {
 	ubo.model = glm::mat4(1.0f);
 	//ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	//ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.proj = glm::perspective(glm::radians(90.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 150.0f);
+	ubo.proj = glm::perspective(glm::radians(90.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 1000.0f);
 	ubo.proj[1][1] *= -1;
 }
 
@@ -1440,28 +1440,48 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 
 void Renderer::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	char*vk = (char*)glfwGetKeyName(key, scancode);
+	char* vk = (char*)glfwGetKeyName(key, scancode);
 	switch (action)
 	{
 	case GLFW_PRESS:
 		if (vk == nullptr) {
-			if (key == GLFW_KEY_SPACE)
+			switch (key)
+			{
+			case GLFW_KEY_SPACE:
 				p.SetFlag(PL_UP);
-			else if (key == GLFW_KEY_LEFT_CONTROL)
+				break;
+			case GLFW_KEY_LEFT_CONTROL:
 				p.SetFlag(PL_DOWN);
-			break;
+				break;
+			case GLFW_KEY_ESCAPE:
+			{
+				int mode = glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED;
+				glfwSetInputMode(window, GLFW_CURSOR, mode);
+				break;
+			}
+
+			default:
+				break;
+			}
 		}
-		else if (*vk == 'z')
-			p.SetFlag(PL_FORWARD);
-
-		else if (*vk == 's')
-			p.SetFlag(PL_BACKWARD);
-
-		else if (*vk == 'q')
-			p.SetFlag(PL_LEFT);
-
-		else if (*vk == 'd')
-			p.SetFlag(PL_RIGHT);
+		else
+			switch (*vk)
+			{
+			case 'z':
+				p.SetFlag(PL_FORWARD);
+				break;
+			case 's':
+				p.SetFlag(PL_BACKWARD);
+				break;
+			case 'q':
+				p.SetFlag(PL_LEFT);
+				break;
+			case 'd':
+				p.SetFlag(PL_RIGHT);
+				break;
+			default:
+				break;
+			}
 		break;
 
 	case GLFW_RELEASE:
@@ -1472,17 +1492,24 @@ void Renderer::keyCallback(GLFWwindow* window, int key, int scancode, int action
 				p.ClrFlag(PL_DOWN);
 			break;
 		}
-		else if (*vk == 'z')
-			p.ClrFlag(PL_FORWARD);
-
-		else if (*vk == 's')
-			p.ClrFlag(PL_BACKWARD);
-
-		else if (*vk == 'q')
-			p.ClrFlag(PL_LEFT);
-
-		else if (*vk == 'd')
-			p.ClrFlag(PL_RIGHT);
+		else
+			switch (*vk)
+			{
+			case 'z':
+				p.ClrFlag(PL_FORWARD);
+				break;
+			case 's':
+				p.ClrFlag(PL_BACKWARD);
+				break;
+			case 'q':
+				p.ClrFlag(PL_LEFT);
+				break;
+			case 'd':
+				p.ClrFlag(PL_RIGHT);
+				break;
+			default:
+				break;
+			}
 		break;
 	default:
 		break;
@@ -1494,11 +1521,11 @@ bool QueueFamilyIndices::isComplete() {
 	return graphicsFamily.has_value() && presentFamily.has_value();
 }
 
-Vertex::Vertex(float x, float y, float z, float texU, float texV)
+Vertex::Vertex(float x, float y, float z, float texU, float texV, float c)
 {
 	pos = { x, y, z };
-	//color = { 1, 1, 1 };
 	texCoord = { texU / NB_TEXTURE, texV / NB_TEXTURE };
+	color = { c, c, c };
 }
 
 VkVertexInputBindingDescription Vertex::getBindingDescription() {
@@ -1510,23 +1537,23 @@ VkVertexInputBindingDescription Vertex::getBindingDescription() {
 	return bindingDescription;
 }
 
-std::array<VkVertexInputAttributeDescription, 2> Vertex::getAttributeDescriptions() {
-	std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+std::array<VkVertexInputAttributeDescription, 3> Vertex::getAttributeDescriptions() {
+	std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions{};
 
 	attributeDescriptions[0].binding = 0;
 	attributeDescriptions[0].location = 0;
 	attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
 	attributeDescriptions[0].offset = offsetof(Vertex, pos);
 
-	/*attributeDescriptions[1].binding = 0;
-	attributeDescriptions[1].location = 1;
-	attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-	attributeDescriptions[1].offset = offsetof(Vertex, color);*/
-
 	attributeDescriptions[1].binding = 0;
 	attributeDescriptions[1].location = 1;
 	attributeDescriptions[1].format = VK_FORMAT_R32G32_SFLOAT;
 	attributeDescriptions[1].offset = offsetof(Vertex, texCoord);
+
+	attributeDescriptions[2].binding = 0;
+	attributeDescriptions[2].location = 2;
+	attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
+	attributeDescriptions[2].offset = offsetof(Vertex, color);
 
 	return attributeDescriptions;
 }

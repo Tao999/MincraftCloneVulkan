@@ -1,4 +1,6 @@
 #include "Player.h"
+#include "World.h"
+#include "Chunk.h"
 
 void Player::process(float d)
 {
@@ -55,6 +57,13 @@ void Player::updateCameraVector()
 	front = glm::normalize(front);
 	right = glm::normalize(glm::cross(front, glm::vec3(0.0, 1.0, 0.0)));
 	up = glm::normalize(glm::cross(right, front));
+}
+
+Player::Player()
+{
+	position.x = float(WORLD_NB_CHUNK * CHUNK_SIZE) / 2.0 + 0.5;
+	position.y = float(WORLD_MAX_HEIGHT + WORLD_MIN_HEIGHT + 1);
+	position.z = float(WORLD_NB_CHUNK * CHUNK_SIZE) / 2.0 + 0.5;
 }
 
 void Player::SetFlag(int f)

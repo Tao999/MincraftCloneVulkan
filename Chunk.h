@@ -1,6 +1,6 @@
 #pragma once
 #include "Renderer.h"
-constexpr int CHUNK_SIZE = 32;
+constexpr int CHUNK_SIZE = 16;
 constexpr int CHUNK_HEIGHT = 128;
 
 class Chunk
@@ -23,8 +23,9 @@ public:
 	Chunk(int chunkX, int chunkZ);
 	~Chunk();
 
-	void updateVertex();
+	void updateVertex(Chunk* north, Chunk* east, Chunk* south, Chunk* west);
 	std::vector<Vertex> getVertices();
 	std::vector<uint32_t> getIndices();
+	int getBlock(int x, int y, int z);
 };
 

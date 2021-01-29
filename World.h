@@ -2,7 +2,7 @@
 #include "SimplexNoise.h"
 #include "Chunk.h"
 
-constexpr int WORLD_NB_CHUNK = 10;
+constexpr int WORLD_NB_CHUNK = 20;
 
 constexpr int WORLD_MAX_HEIGHT = 42;
 constexpr int WORLD_MIN_HEIGHT = 32;

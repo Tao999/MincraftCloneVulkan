@@ -6,6 +6,11 @@ struct Vect2 {
 
 constexpr float NB_TEXTURE = 8;
 
+constexpr float TOP_SHADOW = 1;
+constexpr float NS_SHADOW = 0.75;
+constexpr float EW_SHADOW = 0.5;
+constexpr float BOTTOM_SHADOW = 0.25;
+
 enum { NORTH, EAST, SOUTH, WEST, UP, DOWN };
 
 enum {

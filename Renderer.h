@@ -36,12 +36,13 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 struct Vertex {
     glm::vec3 pos;
     glm::vec2 texCoord;
+    glm::vec3 color;
 
-    Vertex(float x, float y, float z, float texU, float texV);
+    Vertex(float x, float y, float z, float texU, float texV, float c);
 
     static VkVertexInputBindingDescription getBindingDescription();
 
-    static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions();
+    static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions();
 };
 
 struct QueueFamilyIndices {
