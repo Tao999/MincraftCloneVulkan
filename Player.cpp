@@ -16,10 +16,10 @@ void Player::process(float d)
 		position -= glm::normalize(glm::cross(front, up)) * SPEED * d;
 	}
 	if (mIsBitsSet(kbFlags, PL_UP)) {
-		position.y += SPEED * d;
+		position += SPEED * up * d;
 	}
 	if (mIsBitsSet(kbFlags, PL_DOWN)) {
-		position.y -= SPEED * d;
+		position -= SPEED * up * d;
 	}
 }
 

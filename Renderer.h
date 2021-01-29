@@ -10,8 +10,8 @@
 //#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-const uint32_t WIDTH = 800;
-const uint32_t HEIGHT = 600;
+const uint32_t WIDTH = 1600;
+const uint32_t HEIGHT = 900;
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -35,14 +35,13 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 
 struct Vertex {
     glm::vec3 pos;
-    glm::vec3 color;
     glm::vec2 texCoord;
 
     Vertex(float x, float y, float z, float texU, float texV);
 
     static VkVertexInputBindingDescription getBindingDescription();
 
-    static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions();
+    static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions();
 };
 
 struct QueueFamilyIndices {
@@ -70,9 +69,7 @@ class Renderer {
 public:
     void run();
 
-    void setVertices(std::vector<Vertex> newVertices, std::vector<int> newIndices);
-    void addFace(float x, float y, float z, int texture, int orientation);
-    void flushFaces();
+    void setVertices(std::vector<Vertex> newVertices, std::vector<uint32_t> newIndices);
 
 private:
     inline static Player p;
@@ -80,7 +77,7 @@ private:
     inline static UniformBufferObject ubo{};
 
     std::vector<Vertex> vertices = {};
-    std::vector<uint16_t> indices;
+    std::vector<uint32_t> indices;
 
     GLFWwindow* window;
 
@@ -137,10 +134,6 @@ private:
     size_t currentFrame = 0;
 
     bool framebufferResized = false;
-
-
-    void addVertice(Vertex v);
-    void addVerticeIndice(uint16_t i);
 
     void initWindow();
 

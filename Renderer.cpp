@@ -9,7 +9,7 @@ void Renderer::run() {
 	cleanup();
 }
 
-void Renderer::setVertices(std::vector<Vertex> newVertices, std::vector<int> newIndices)
+void Renderer::setVertices(std::vector<Vertex> newVertices, std::vector<uint32_t> newIndices)
 {
 	vertices.clear();
 	indices.clear();
@@ -19,105 +19,8 @@ void Renderer::setVertices(std::vector<Vertex> newVertices, std::vector<int> new
 	for (int i = 0; i < newIndices.size(); i++) {
 		indices.push_back(newIndices[i]);
 	}
-}
-
-void Renderer::addFace(float x, float y, float z, int texture, int orientation)
-{
-	int uvy = orientation < UP ? 0 : orientation - UP + 1;
-	Vect2 uvInfo = TEXTURES[texture - 1][uvy];
-	switch (orientation)
-	{
-	case UP:
-		addVerticeIndice(vertices.size() + 2);
-		addVerticeIndice(vertices.size() + 0);
-		addVerticeIndice(vertices.size() + 3);
-		addVerticeIndice(vertices.size() + 2);
-		addVerticeIndice(vertices.size() + 1);
-		addVerticeIndice(vertices.size() + 0);
-		addVertice(Vertex(0.0f + x, 1.0f + y, 0.0f + z, uvInfo.x, uvInfo.y + 1));
-		addVertice(Vertex(1.0f + x, 1.0f + y, 0.0f + z, uvInfo.x, uvInfo.y));
-		addVertice(Vertex(1.0f + x, 1.0f + y, 1.0f + z, uvInfo.x + 1, uvInfo.y));
-		addVertice(Vertex(0.0f + x, 1.0f + y, 1.0f + z, uvInfo.x + 1, uvInfo.y + 1));
-		break;
-	case NORTH:
-		addVerticeIndice(vertices.size() + 2);
-		addVerticeIndice(vertices.size() + 0);
-		addVerticeIndice(vertices.size() + 1);
-		addVerticeIndice(vertices.size() + 0);
-		addVerticeIndice(vertices.size() + 2);
-		addVerticeIndice(vertices.size() + 3);
-		addVertice(Vertex(1.0f + x, 0.0f + y, 0.0f + z, uvInfo.x + 1, uvInfo.y + 1));
-		addVertice(Vertex(1.0f + x, 1.0f + y, 0.0f + z, uvInfo.x + 1, uvInfo.y));
-		addVertice(Vertex(1.0f + x, 1.0f + y, 1.0f + z, uvInfo.x, uvInfo.y));
-		addVertice(Vertex(1.0f + x, 0.0f + y, 1.0f + z, uvInfo.x, uvInfo.y + 1));
-		break;
-	case DOWN:
-		addVerticeIndice(vertices.size() + 3);
-		addVerticeIndice(vertices.size() + 0);
-		addVerticeIndice(vertices.size() + 1);
-		addVerticeIndice(vertices.size() + 3);
-		addVerticeIndice(vertices.size() + 1);
-		addVerticeIndice(vertices.size() + 2);
-		addVertice(Vertex(0.0f + x, 0.0f + y, 0.0f + z, uvInfo.x + 1, uvInfo.y + 1));
-		addVertice(Vertex(1.0f + x, 0.0f + y, 0.0f + z, uvInfo.x + 1, uvInfo.y));
-		addVertice(Vertex(1.0f + x, 0.0f + y, 1.0f + z, uvInfo.x, uvInfo.y));
-		addVertice(Vertex(0.0f + x, 0.0f + y, 1.0f + z, uvInfo.x, uvInfo.y + 1));
-		break;
-	case SOUTH:
-		addVerticeIndice(vertices.size() + 3);
-		addVerticeIndice(vertices.size() + 1);
-		addVerticeIndice(vertices.size() + 0);
-		addVerticeIndice(vertices.size() + 0);
-		addVerticeIndice(vertices.size() + 2);
-		addVerticeIndice(vertices.size() + 3);
-		addVertice(Vertex(0.0f + x, 0.0f + y, 0.0f + z, uvInfo.x, uvInfo.y + 1));
-		addVertice(Vertex(0.0f + x, 1.0f + y, 0.0f + z, uvInfo.x, uvInfo.y));
-		addVertice(Vertex(0.0f + x, 0.0f + y, 1.0f + z, uvInfo.x + 1, uvInfo.y + 1));
-		addVertice(Vertex(0.0f + x, 1.0f + y, 1.0f + z, uvInfo.x + 1, uvInfo.y));
-		break;
-	case EAST:
-		addVerticeIndice(vertices.size() + 1);
-		addVerticeIndice(vertices.size() + 0);
-		addVerticeIndice(vertices.size() + 2);
-		addVerticeIndice(vertices.size() + 2);
-		addVerticeIndice(vertices.size() + 3);
-		addVerticeIndice(vertices.size() + 1);
-		addVertice(Vertex(0.0f + x, 0.0f + y, 1.0f + z, uvInfo.x, uvInfo.y + 1));
-		addVertice(Vertex(0.0f + x, 1.0f + y, 1.0f + z, uvInfo.x, uvInfo.y));
-		addVertice(Vertex(1.0f + x, 0.0f + y, 1.0f + z, uvInfo.x + 1, uvInfo.y + 1));
-		addVertice(Vertex(1.0f + x, 1.0f + y, 1.0f + z, uvInfo.x + 1, uvInfo.y));
-		break;
-	case WEST:
-		addVerticeIndice(vertices.size() + 2);
-		addVerticeIndice(vertices.size() + 0);
-		addVerticeIndice(vertices.size() + 1);
-		addVerticeIndice(vertices.size() + 1);
-		addVerticeIndice(vertices.size() + 3);
-		addVerticeIndice(vertices.size() + 2);
-		addVertice(Vertex(0.0f + x, 1.0f + y, 0.0f + z, uvInfo.x + 1, uvInfo.y));
-		addVertice(Vertex(1.0f + x, 1.0f + y, 0.0f + z, uvInfo.x, uvInfo.y));
-		addVertice(Vertex(0.0f + x, 0.0f + y, 0.0f + z, uvInfo.x + 1, uvInfo.y + 1));
-		addVertice(Vertex(1.0f + x, 0.0f + y, 0.0f + z, uvInfo.x, uvInfo.y + 1));
-		break;
-	default:
-		break;
-	}
-}
-
-void Renderer::flushFaces()
-{
-	indices.clear();
-	vertices.clear();
-}
-
-void Renderer::addVertice(Vertex v)
-{
-	vertices.push_back(v);
-}
-
-void Renderer::addVerticeIndice(uint16_t i)
-{
-	indices.push_back(i);
+	vertices.shrink_to_fit();
+	indices.shrink_to_fit();
 }
 
 void Renderer::initWindow() {
@@ -170,7 +73,7 @@ void Renderer::initVulkan() {
 	ubo.model = glm::mat4(1.0f);
 	//ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	//ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 70.0f);
+	ubo.proj = glm::perspective(glm::radians(90.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 150.0f);
 	ubo.proj[1][1] *= -1;
 }
 
@@ -1195,7 +1098,7 @@ void Renderer::createCommandBuffers() {
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
 
-		vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+		vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
 		vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
 
@@ -1594,7 +1497,7 @@ bool QueueFamilyIndices::isComplete() {
 Vertex::Vertex(float x, float y, float z, float texU, float texV)
 {
 	pos = { x, y, z };
-	color = { 1, 1, 1 };
+	//color = { 1, 1, 1 };
 	texCoord = { texU / NB_TEXTURE, texV / NB_TEXTURE };
 }
 
@@ -1607,23 +1510,23 @@ VkVertexInputBindingDescription Vertex::getBindingDescription() {
 	return bindingDescription;
 }
 
-std::array<VkVertexInputAttributeDescription, 3> Vertex::getAttributeDescriptions() {
-	std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions{};
+std::array<VkVertexInputAttributeDescription, 2> Vertex::getAttributeDescriptions() {
+	std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
 
 	attributeDescriptions[0].binding = 0;
 	attributeDescriptions[0].location = 0;
 	attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
 	attributeDescriptions[0].offset = offsetof(Vertex, pos);
 
-	attributeDescriptions[1].binding = 0;
+	/*attributeDescriptions[1].binding = 0;
 	attributeDescriptions[1].location = 1;
 	attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-	attributeDescriptions[1].offset = offsetof(Vertex, color);
+	attributeDescriptions[1].offset = offsetof(Vertex, color);*/
 
-	attributeDescriptions[2].binding = 0;
-	attributeDescriptions[2].location = 2;
-	attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
-	attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
+	attributeDescriptions[1].binding = 0;
+	attributeDescriptions[1].location = 1;
+	attributeDescriptions[1].format = VK_FORMAT_R32G32_SFLOAT;
+	attributeDescriptions[1].offset = offsetof(Vertex, texCoord);
 
 	return attributeDescriptions;
 }

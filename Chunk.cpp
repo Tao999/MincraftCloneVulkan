@@ -1,18 +1,26 @@
+#include "World.h"
 #include "Chunk.h"
 #include "TexturesInfo.h"
 
-Chunk::Chunk()
+Chunk::Chunk(int chunkX, int chunkZ)
 {
+	chunkPos = { chunkX, chunkZ };
 	for (int x = 0; x < CHUNK_SIZE; x++) {
 		for (int y = 0; y < CHUNK_HEIGHT; y++) {
 			for (int z = 0; z < CHUNK_SIZE; z++) {
-				if ((z + x >= y && y == CHUNK_HEIGHT - 1) || z + x == y)
+				float sX = float(chunkX * CHUNK_SIZE + x) * SIMP_CORREC;
+				float sZ = float(chunkZ * CHUNK_SIZE + z) * SIMP_CORREC;
+				int maxHeight = (1 + simplex.noise(sX, sZ)) / 2 * WORLD_MAX_HEIGHT + WORLD_MIN_HEIGHT;
+				if (y == maxHeight)
 					blocks[x][y][z] = BLOCK_GRASS;
-				else if (z + x > y)
-					blocks[x][y][z] = BLOCK_DIRT;
+				else if (y < maxHeight) {
+					blocks[x][y][z] = (y <= maxHeight - 3) ? BLOCK_STONE : BLOCK_DIRT;
+				}
 			}
 		}
 	}
+	updateVertex();
+	std::cout << "Chunk Gen : " << float(chunkX * WORLD_NB_CHUNK + chunkZ) / float(WORLD_NB_CHUNK * WORLD_NB_CHUNK) * 100 << "%\r";
 }
 
 Chunk::~Chunk()
@@ -23,6 +31,8 @@ Chunk::~Chunk()
 
 void Chunk::updateVertex()
 {
+	float xOff = (float)(chunkPos.x * CHUNK_SIZE);
+	float zOff = (float)(chunkPos.z * CHUNK_SIZE);
 	chunkIndices.clear();
 	chunkVertices.clear();
 	for (int x = 0; x < CHUNK_SIZE; x++) {
@@ -39,10 +49,10 @@ void Chunk::updateVertex()
 						chunkIndices.push_back(chunkVertices.size() + 2);
 						chunkIndices.push_back(chunkVertices.size() + 0);
 						chunkIndices.push_back(chunkVertices.size() + 1);
-						chunkVertices.push_back(Vertex(1.0f + x, 0.0f + y, 0.0f + z, texs[0].x + 1, texs[0].y + 1));
-						chunkVertices.push_back(Vertex(1.0f + x, 1.0f + y, 0.0f + z, texs[0].x + 1, texs[0].y));
-						chunkVertices.push_back(Vertex(1.0f + x, 1.0f + y, 1.0f + z, texs[0].x, texs[0].y));
-						chunkVertices.push_back(Vertex(1.0f + x, 0.0f + y, 1.0f + z, texs[0].x, texs[0].y + 1));
+						chunkVertices.push_back(Vertex(1.0f + x + xOff, 0.0f + y, 0.0f + z + zOff, texs[0].x + 1, texs[0].y + 1));
+						chunkVertices.push_back(Vertex(1.0f + x + xOff, 1.0f + y, 0.0f + z + zOff, texs[0].x + 1, texs[0].y));
+						chunkVertices.push_back(Vertex(1.0f + x + xOff, 1.0f + y, 1.0f + z + zOff, texs[0].x, texs[0].y));
+						chunkVertices.push_back(Vertex(1.0f + x + xOff, 0.0f + y, 1.0f + z + zOff, texs[0].x, texs[0].y + 1));
 					}
 					// sud
 					if (x == 0 || blocks[x - 1][y][z] == NO_BLOCK) {
@@ -52,10 +62,10 @@ void Chunk::updateVertex()
 						chunkIndices.push_back(chunkVertices.size() + 0);
 						chunkIndices.push_back(chunkVertices.size() + 2);
 						chunkIndices.push_back(chunkVertices.size() + 3);
-						chunkVertices.push_back(Vertex(0.0f + x, 0.0f + y, 0.0f + z, texs[0].x, texs[0].y + 1));
-						chunkVertices.push_back(Vertex(0.0f + x, 1.0f + y, 0.0f + z, texs[0].x, texs[0].y));
-						chunkVertices.push_back(Vertex(0.0f + x, 0.0f + y, 1.0f + z, texs[0].x + 1, texs[0].y + 1));
-						chunkVertices.push_back(Vertex(0.0f + x, 1.0f + y, 1.0f + z, texs[0].x + 1, texs[0].y));
+						chunkVertices.push_back(Vertex(0.0f + x + xOff, 0.0f + y, 0.0f + z + zOff, texs[0].x, texs[0].y + 1));
+						chunkVertices.push_back(Vertex(0.0f + x + xOff, 1.0f + y, 0.0f + z + zOff, texs[0].x, texs[0].y));
+						chunkVertices.push_back(Vertex(0.0f + x + xOff, 0.0f + y, 1.0f + z + zOff, texs[0].x + 1, texs[0].y + 1));
+						chunkVertices.push_back(Vertex(0.0f + x + xOff, 1.0f + y, 1.0f + z + zOff, texs[0].x + 1, texs[0].y));
 					}
 					// EST
 					if (z == CHUNK_SIZE - 1 || blocks[x][y][z + 1] == NO_BLOCK) {
@@ -65,10 +75,10 @@ void Chunk::updateVertex()
 						chunkIndices.push_back(chunkVertices.size() + 2);
 						chunkIndices.push_back(chunkVertices.size() + 3);
 						chunkIndices.push_back(chunkVertices.size() + 1);
-						chunkVertices.push_back(Vertex(0.0f + x, 0.0f + y, 1.0f + z, texs[0].x, texs[0].y + 1));
-						chunkVertices.push_back(Vertex(0.0f + x, 1.0f + y, 1.0f + z, texs[0].x, texs[0].y));
-						chunkVertices.push_back(Vertex(1.0f + x, 0.0f + y, 1.0f + z, texs[0].x + 1, texs[0].y + 1));
-						chunkVertices.push_back(Vertex(1.0f + x, 1.0f + y, 1.0f + z, texs[0].x + 1, texs[0].y));
+						chunkVertices.push_back(Vertex(0.0f + x + xOff, 0.0f + y, 1.0f + z + zOff, texs[0].x, texs[0].y + 1));
+						chunkVertices.push_back(Vertex(0.0f + x + xOff, 1.0f + y, 1.0f + z + zOff, texs[0].x, texs[0].y));
+						chunkVertices.push_back(Vertex(1.0f + x + xOff, 0.0f + y, 1.0f + z + zOff, texs[0].x + 1, texs[0].y + 1));
+						chunkVertices.push_back(Vertex(1.0f + x + xOff, 1.0f + y, 1.0f + z + zOff, texs[0].x + 1, texs[0].y));
 					}
 					// ouest
 					if (z == 0 || blocks[x][y][z - 1] == NO_BLOCK) {
@@ -78,24 +88,23 @@ void Chunk::updateVertex()
 						chunkIndices.push_back(chunkVertices.size() + 1);
 						chunkIndices.push_back(chunkVertices.size() + 3);
 						chunkIndices.push_back(chunkVertices.size() + 2);
-						chunkVertices.push_back(Vertex(0.0f + x, 1.0f + y, 0.0f + z, texs[0].x + 1, texs[0].y));
-						chunkVertices.push_back(Vertex(1.0f + x, 1.0f + y, 0.0f + z, texs[0].x, texs[0].y));
-						chunkVertices.push_back(Vertex(0.0f + x, 0.0f + y, 0.0f + z, texs[0].x + 1, texs[0].y + 1));
-						chunkVertices.push_back(Vertex(1.0f + x, 0.0f + y, 0.0f + z, texs[0].x, texs[0].y + 1));
+						chunkVertices.push_back(Vertex(0.0f + x + xOff, 1.0f + y, 0.0f + z + zOff, texs[0].x + 1, texs[0].y));
+						chunkVertices.push_back(Vertex(1.0f + x + xOff, 1.0f + y, 0.0f + z + zOff, texs[0].x, texs[0].y));
+						chunkVertices.push_back(Vertex(0.0f + x + xOff, 0.0f + y, 0.0f + z + zOff, texs[0].x + 1, texs[0].y + 1));
+						chunkVertices.push_back(Vertex(1.0f + x + xOff, 0.0f + y, 0.0f + z + zOff, texs[0].x, texs[0].y + 1));
 					}
 					// UP
 					if (y == CHUNK_HEIGHT - 1 || blocks[x][y + 1][z] == NO_BLOCK) {
-						//Vect2 temp = TEXTURES[0][1];
 						chunkIndices.push_back(chunkVertices.size() + 2);
 						chunkIndices.push_back(chunkVertices.size() + 0);
 						chunkIndices.push_back(chunkVertices.size() + 3);
 						chunkIndices.push_back(chunkVertices.size() + 2);
 						chunkIndices.push_back(chunkVertices.size() + 1);
 						chunkIndices.push_back(chunkVertices.size() + 0);
-						chunkVertices.push_back(Vertex(0.0f + x, 1.0f + y, 0.0f + z, texs[1].x, texs[1].y + 1));
-						chunkVertices.push_back(Vertex(1.0f + x, 1.0f + y, 0.0f + z, texs[1].x, texs[1].y));
-						chunkVertices.push_back(Vertex(1.0f + x, 1.0f + y, 1.0f + z, texs[1].x + 1, texs[1].y));
-						chunkVertices.push_back(Vertex(0.0f + x, 1.0f + y, 1.0f + z, texs[1].x + 1, texs[1].y + 1));
+						chunkVertices.push_back(Vertex(0.0f + x + xOff, 1.0f + y, 0.0f + z + zOff, texs[1].x, texs[1].y + 1));
+						chunkVertices.push_back(Vertex(1.0f + x + xOff, 1.0f + y, 0.0f + z + zOff, texs[1].x, texs[1].y));
+						chunkVertices.push_back(Vertex(1.0f + x + xOff, 1.0f + y, 1.0f + z + zOff, texs[1].x + 1, texs[1].y));
+						chunkVertices.push_back(Vertex(0.0f + x + xOff, 1.0f + y, 1.0f + z + zOff, texs[1].x + 1, texs[1].y + 1));
 					}
 					//down
 					if (y == 0 || blocks[x][y - 1][z] == NO_BLOCK) {
@@ -105,15 +114,17 @@ void Chunk::updateVertex()
 						chunkIndices.push_back(chunkVertices.size() + 3);
 						chunkIndices.push_back(chunkVertices.size() + 1);
 						chunkIndices.push_back(chunkVertices.size() + 2);
-						chunkVertices.push_back(Vertex(0.0f + x, 0.0f + y, 0.0f + z, texs[2].x + 1, texs[2].y + 1));
-						chunkVertices.push_back(Vertex(1.0f + x, 0.0f + y, 0.0f + z, texs[2].x + 1, texs[2].y));
-						chunkVertices.push_back(Vertex(1.0f + x, 0.0f + y, 1.0f + z, texs[2].x, texs[2].y));
-						chunkVertices.push_back(Vertex(0.0f + x, 0.0f + y, 1.0f + z, texs[2].x, texs[2].y + 1));
+						chunkVertices.push_back(Vertex(0.0f + x + xOff, 0.0f + y, 0.0f + z + zOff, texs[2].x + 1, texs[2].y + 1));
+						chunkVertices.push_back(Vertex(1.0f + x + xOff, 0.0f + y, 0.0f + z + zOff, texs[2].x + 1, texs[2].y));
+						chunkVertices.push_back(Vertex(1.0f + x + xOff, 0.0f + y, 1.0f + z + zOff, texs[2].x, texs[2].y));
+						chunkVertices.push_back(Vertex(0.0f + x + xOff, 0.0f + y, 1.0f + z + zOff, texs[2].x, texs[2].y + 1));
 					}
 				}
 			}
 		}
 	}
+	chunkVertices.shrink_to_fit();
+	chunkIndices.shrink_to_fit();
 }
 
 std::vector<Vertex> Chunk::getVertices()
@@ -121,7 +132,7 @@ std::vector<Vertex> Chunk::getVertices()
 	return chunkVertices;
 }
 
-std::vector<int> Chunk::getIndices()
+std::vector<uint32_t> Chunk::getIndices()
 {
 	return chunkIndices;
 }

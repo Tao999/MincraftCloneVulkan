@@ -11,11 +11,13 @@ enum { NORTH, EAST, SOUTH, WEST, UP, DOWN };
 enum {
 	NO_BLOCK,
 	BLOCK_GRASS,
-	BLOCK_DIRT
+	BLOCK_DIRT,
+	BLOCK_STONE,
 };
 
 // SIDE, UP, DOWN
 constexpr Vect2 TEXTURES[][3] = {
 	{{ 0, 0 }, { 1, 0 }, { 0, 1 }},
-	{{ 0, 1 }, { 0, 1 }, { 0, 1 }}
+	{{ 0, 1 }, { 0, 1 }, { 0, 1 }},
+	{{ 1, 1 }, { 1, 1 }, { 1, 1 }},
 };
