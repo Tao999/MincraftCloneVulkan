@@ -6,15 +6,24 @@ Chunk::Chunk(int chunkX, int chunkZ)
 {
 	chunkPos = { chunkX, chunkZ };
 	for (int x = 0; x < CHUNK_SIZE; x++) {
-		for (int y = 0; y < CHUNK_HEIGHT; y++) {
-			for (int z = 0; z < CHUNK_SIZE; z++) {
-				float sX = float(chunkX * CHUNK_SIZE + x) * SIMP_CORREC;
-				float sZ = float(chunkZ * CHUNK_SIZE + z) * SIMP_CORREC;
-				int maxHeight = (1 + simplex.noise(sX, sZ)) / 2 * WORLD_MAX_HEIGHT + WORLD_MIN_HEIGHT;
-				if (y == maxHeight)
+		for (int z = 0; z < CHUNK_SIZE; z++) {
+			//génération du térrain global
+			float sX = float(chunkX * CHUNK_SIZE + x) * SIMP_CORREC;
+			float sZ = float(chunkZ * CHUNK_SIZE + z) * SIMP_CORREC;
+			int maxHeight = (
+				((1 + simplex.fractal(1, sX, sZ)) / 2)+
+				((1 + simplex.fractal(5, sZ, sX)) / 2)
+				)/2 * (WORLD_MAX_HEIGHT - WORLD_MIN_HEIGHT) + WORLD_MIN_HEIGHT;
+
+			int snowOff = simplex.noise(sX*2, sZ*2) * 10;
+
+			for (int y = 0; y < CHUNK_HEIGHT; y++) {
+				if(y >= CHUNK_HEIGHT * 0.65 + snowOff && y <= maxHeight)
+					blocks[x][y][z] = BLOCK_SNOW;
+				else if (y == maxHeight)
 					blocks[x][y][z] = BLOCK_GRASS;
 				else if (y < maxHeight) {
-					blocks[x][y][z] = (y <= maxHeight - 3) ? BLOCK_STONE : BLOCK_DIRT;
+					blocks[x][y][z] = (y <= maxHeight - 2) ? BLOCK_STONE : BLOCK_DIRT;
 				}
 			}
 		}

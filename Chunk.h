@@ -1,7 +1,7 @@
 #pragma once
 #include "Renderer.h"
 constexpr int CHUNK_SIZE = 16;
-constexpr int CHUNK_HEIGHT = 128;
+constexpr int CHUNK_HEIGHT = 256;
 
 class Chunk
 {

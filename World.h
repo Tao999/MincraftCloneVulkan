@@ -2,14 +2,14 @@
 #include "SimplexNoise.h"
 #include "Chunk.h"
 
-constexpr int WORLD_NB_CHUNK = 20;
+constexpr int WORLD_NB_CHUNK = 100;
 
-constexpr int WORLD_MAX_HEIGHT = 42;
-constexpr int WORLD_MIN_HEIGHT = 32;
+constexpr int WORLD_MAX_HEIGHT = CHUNK_HEIGHT;
+constexpr int WORLD_MIN_HEIGHT = 64;
 
-constexpr float SIMP_CORREC = 0.01;
+constexpr float SIMP_CORREC = 0.005;
 
-static SimplexNoise simplex;
+static SimplexNoise simplex(1.0f, 1.0f, 2.0f, 0.5f);
 
 class World
 {
